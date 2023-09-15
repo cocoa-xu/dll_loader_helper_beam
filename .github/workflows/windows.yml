@@ -119,12 +119,3 @@ jobs:
           mix deps.get
           mix test
           cd ..
-
-      - name: Test the Elixir example
-        if: matrix.pair.vcvarsall == 'x64'
-        shell: bash
-        run: |
-          cd dll_loader_helper/example/elixir
-          rm -rf _build build build_dll
-          mix deps.get
-          mix test

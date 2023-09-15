@@ -3,7 +3,7 @@
 -import(checksum, [checksum/0]).
 
 -define(PRECOMPILED_TARBALL_NAME, "dll_loader_helper_beam-nif_~s-~s-~s").
--define(PRECOMPILED_DOWNLOAD_URL, "https://github.com/cocoa-xu/dll_loader_helper/releases/download/v~s/~s").
+-define(PRECOMPILED_DOWNLOAD_URL, "https://github.com/cocoa-xu/dll_loader_helper_beam/releases/download/v~s/~s").
 -define(NIF_DLL_FILE, "priv/dll_loader_helper_beam.dll").
 
 -include_lib("kernel/include/file.hrl").
