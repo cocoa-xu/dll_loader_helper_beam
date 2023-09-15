@@ -100,8 +100,6 @@ jobs:
         run: |
           export PATH="$(pwd):$PATH"
 
-          cd dll_loader_helper_beam
-
           if [ "${{ matrix.pair.vcvarsall }}" = "amd64_arm64" ]; then
             export CMAKE_GENERATOR_TYPE="${{ matrix.pair.CMAKE_GENERATOR_TYPE }}"
             export MSBUILD_PLATFORM="${{ matrix.pair.msbuild_platform }}"
@@ -110,12 +108,4 @@ jobs:
           fi
 
           rebar3 eunit
-          cd ..
-
-      - name: Mix Test
-        if: matrix.pair.vcvarsall == 'x64'
-        run: |
-          cd dll_loader_helper
-          mix deps.get
-          mix test
           cd ..
