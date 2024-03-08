@@ -40,6 +40,11 @@ jobs:
               msbuild_platform: x64
               vcvarsall: x64
               otp_version: "21"
+          - pair:
+              arch_name: i686
+              msbuild_platform: x32
+              vcvarsall: x32
+              otp_version: "21"
 
     steps:
       - name: Checkout
