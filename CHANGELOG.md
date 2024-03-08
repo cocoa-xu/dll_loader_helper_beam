@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.1 (2024-03-08)
+
+[Precompiled] Lowered the minimum required NIF version to `2.14` (corresponds to Erlang/OTP 21).
+
 ## v1.2.0 (2023-09-16)
 
 Deprecated Elixir version of `dll_loader_helper`.
