@@ -79,6 +79,12 @@ get_target() ->
                     WIN_ARCH = case maybe_override_by_env("PROCESSOR_ARCHITECTURE", "x86_64") of
                         "ARM64" ->
                             "aarch64";
+                        "AMD64" ->
+                            "x86_64";
+                        "EM64T" ->
+                            "x86_64";
+                        "X86" ->
+                            "i686";
                         PROCESSOR_ARCHITECTURE ->
                             PROCESSOR_ARCHITECTURE
                     end,
@@ -95,6 +101,9 @@ get_target() ->
 
 get_nif_version() ->
     erlang:system_info(nif_version).
+
+minimal_nif_version() ->
+    "2.14".
 
 get_expected_checksum(TarballFilename) ->
     Map = checksum:checksum(),
@@ -118,14 +127,19 @@ is_precompiled_binary_available() ->
         {false, AppVersion} ->
             Target = get_target(),
             NifVersion = get_nif_version(),
-            Name = lists:flatten(io_lib:fwrite(?PRECOMPILED_TARBALL_NAME, [NifVersion, Target, AppVersion])),
-            TarballFilename = lists:flatten(io_lib:fwrite("~s.tar.gz", [Name])),
-            case get_expected_checksum(TarballFilename) of
+            case NifVersion < minimal_nif_version() of
+                true ->
+                    {false, "NIF version is too low, will fallback to compile from source code."};
                 false ->
-                    {error, lists:flatten(io_lib:fwrite("Cannot find checksum for ~s~n", [Name]))};
-                {Algo, Checksum} ->
-                    TarballURL = lists:flatten(io_lib:fwrite(?PRECOMPILED_DOWNLOAD_URL, [AppVersion, TarballFilename])),
-                    {true, Name, TarballFilename, TarballURL, Algo, Checksum}
+                    Name = lists:flatten(io_lib:fwrite(?PRECOMPILED_TARBALL_NAME, [NifVersion, Target, AppVersion])),
+                    TarballFilename = lists:flatten(io_lib:fwrite("~s.tar.gz", [Name])),
+                    case get_expected_checksum(TarballFilename) of
+                        false ->
+                            {error, lists:flatten(io_lib:fwrite("Cannot find checksum for ~s~n", [Name]))};
+                        {Algo, Checksum} ->
+                            TarballURL = lists:flatten(io_lib:fwrite(?PRECOMPILED_DOWNLOAD_URL, [AppVersion, TarballFilename])),
+                            {true, Name, TarballFilename, TarballURL, Algo, Checksum}
+                    end
             end
     end.
 

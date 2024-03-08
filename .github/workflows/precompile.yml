@@ -32,38 +32,28 @@ jobs:
               arch_name: aarch64
               msbuild_platform: ARM64
               vcvarsall: amd64_arm64
-              otp_version: "25"
-              elixir_version: "1.15"
+              otp_version: "21"
               CMAKE_GENERATOR_TYPE: "Visual Studio 17"
               CMAKE_TOOLCHAIN_FILE: "cc_toolchain/aarch64-windows-msvc.cmake"
           - pair:
               arch_name: x86_64
               msbuild_platform: x64
               vcvarsall: x64
-              otp_version: "25"
-              elixir_version: "1.15"
+              otp_version: "21"
           - pair:
-              arch_name: aarch64
-              msbuild_platform: ARM64
-              vcvarsall: amd64_arm64
-              otp_version: "26"
-              elixir_version: "1.15"
-              CMAKE_GENERATOR_TYPE: "Visual Studio 17"
-              CMAKE_TOOLCHAIN_FILE: "cc_toolchain/aarch64-windows-msvc.cmake"
-          - pair:
-              arch_name: x86_64
-              msbuild_platform: x64
-              vcvarsall: x64
-              otp_version: "26"
-              elixir_version: "1.15"
+              arch_name: i686
+              msbuild_platform: x86
+              vcvarsall: amd64_x86
+              otp_version: "21"
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: erlef/setup-beam@v1
+      - name: Install Erlang/OTP
+        uses: erlef/setup-beam@v1
         with:
           otp-version: ${{ matrix.pair.otp_version }}
-          elixir-version: ${{ matrix.pair.elixir_version }}
 
       - uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -72,7 +62,9 @@ jobs:
       - name: Install rebar3
         shell: bash
         run: |
-          curl -fSL https://s3.amazonaws.com/rebar3/rebar3 -o rebar3 && chmod +x rebar3
+          git clone https://github.com/erlang/rebar3.git rebar3-src
+          cd rebar3-src
+          ./bootstrap
           cat <<EOF >rebar3.cmd
           @echo off
           setlocal
@@ -83,7 +75,7 @@ jobs:
       - name: Precompile
         shell: bash
         run: |
-          export PATH="$(pwd):$PATH"
+          export PATH="$(pwd)/rebar3-src:$PATH"
 
           if [ "${{ matrix.pair.vcvarsall }}" = "amd64_arm64" ]; then
             export CMAKE_GENERATOR_TYPE="${{ matrix.pair.CMAKE_GENERATOR_TYPE }}"
