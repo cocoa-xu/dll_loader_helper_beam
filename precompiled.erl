@@ -389,13 +389,13 @@ is_already_installed() ->
 all_available_targets() ->
     AppVersion = app_version(),
     AppName = "dll_loader_helper_beam",
+    MinimalNifVersion = minimal_nif_version(),
     {
         AppVersion,
         [
-            io_lib:format("~s-nif-2.16-aarch64-windows-msvc-v~s.tar.gz", [AppName, AppVersion]),
-            io_lib:format("~s-nif-2.16-x86_64-windows-msvc-v~s.tar.gz", [AppName, AppVersion]),
-            io_lib:format("~s-nif-2.17-aarch64-windows-msvc-v~s.tar.gz", [AppName, AppVersion]),
-            io_lib:format("~s-nif-2.17-x86_64-windows-msvc-v~s.tar.gz", [AppName, AppVersion])
+            io_lib:format("~s-nif-~s-aarch64-windows-msvc-v~s.tar.gz", [AppName, MinimalNifVersion, AppVersion]),
+            io_lib:format("~s-nif-~s-x86_64-windows-msvc-v~s.tar.gz", [AppName, MinimalNifVersion, AppVersion]),
+            io_lib:format("~s-nif-~s-i686-windows-msvc-v~s.tar.gz", [AppName, MinimalNifVersion, AppVersion])
         ]
     }.
 
