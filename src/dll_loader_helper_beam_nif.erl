@@ -1,6 +1,5 @@
 -module(dll_loader_helper_beam_nif).
--compile(nowarn_export_all).
--compile([export_all]).
+-export([add_dll_directory/1]).
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
 -endif.
@@ -13,18 +12,19 @@
 init() ->
     case os:type() of
         {win32, nt} ->
-            SoName = case code:priv_dir(?APPNAME) of
-            {error, bad_name} ->
-                case filelib:is_dir(filename:join(["..", priv])) of
-                    true ->
-                        filename:join(["..", priv, ?LIBNAME]);
-                    _ ->
-                        filename:join([priv, ?LIBNAME])
-                end;
-            Dir ->
-                filename:join(Dir, ?LIBNAME)
-        end,
-        erlang:load_nif(SoName, 0);
+            SoName = 
+                case code:priv_dir(?APPNAME) of
+                    {error, bad_name} ->
+                        case filelib:is_dir(filename:join(["..", priv])) of
+                            true ->
+                                filename:join(["..", priv, ?LIBNAME]);
+                            _ ->
+                                filename:join([priv, ?LIBNAME])
+                        end;
+                    Dir ->
+                        filename:join(Dir, ?LIBNAME)
+                end,
+            erlang:load_nif(SoName, 0);
         _ ->
             ok
     end.
@@ -32,9 +32,13 @@ init() ->
 not_loaded(Line) ->
     erlang:nif_error({not_loaded, [{module, ?MODULE}, {line, Line}]}).
 
-
 add_dll_directory(_DllDirectory) ->
-    not_loaded(?LINE).
+    case os:type() of
+        {win32, nt} ->
+            not_loaded(?LINE);
+        _ ->
+            ok
+    end.
 
 -ifdef(EUNIT).
 add_dll_directory_test() ->
