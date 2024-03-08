@@ -90,7 +90,7 @@ jobs:
         shell: bash
         if: matrix.pair.vcvarsall == 'x64'
         run: |
-          export PATH="$(pwd):$PATH"
+          export PATH="$(pwd)/rebar3-src:$PATH"
 
           if [ "${{ matrix.pair.vcvarsall }}" = "amd64_arm64" ]; then
             export CMAKE_GENERATOR_TYPE="${{ matrix.pair.CMAKE_GENERATOR_TYPE }}"
