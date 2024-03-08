@@ -42,8 +42,8 @@ jobs:
               otp_version: "21"
           - pair:
               arch_name: i686
-              msbuild_platform: x32
-              vcvarsall: x32
+              msbuild_platform: x86
+              vcvarsall: amd64_x86
               otp_version: "21"
 
     steps:
