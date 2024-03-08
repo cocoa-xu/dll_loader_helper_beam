@@ -72,7 +72,7 @@ jobs:
       - name: rebar3 compile
         shell: bash
         run: |
-          export PATH="$(pwd):$PATH"
+          export PATH="$(pwd)/rebar3-src:$PATH"
 
           if [ "${{ matrix.pair.vcvarsall }}" = "amd64_arm64" ]; then
             export CMAKE_GENERATOR_TYPE="${{ matrix.pair.CMAKE_GENERATOR_TYPE }}"
