@@ -2,7 +2,7 @@
 -export([is_precompiled_binary_available/0, install_precompiled_binary_if_available/0, fetch_precompile/0]).
 -import(checksum, [checksum/0]).
 
--define(PRECOMPILED_TARBALL_NAME, "dll_loader_helper_beam-nif_~s-~s-~s").
+-define(PRECOMPILED_TARBALL_NAME, "dll_loader_helper_beam-nif-~s-~s-v~s").
 -define(PRECOMPILED_DOWNLOAD_URL, "https://github.com/cocoa-xu/dll_loader_helper_beam/releases/download/v~s/~s").
 -define(NIF_DLL_FILE, "priv/dll_loader_helper_beam.dll").
 
@@ -29,7 +29,7 @@ app_version() ->
                                             "unknown"
                                     end
                             end;
-                        {error, _} -> 
+                        {error, _} ->
                             "unknown"
                     end;
                 {error, _} ->
@@ -127,11 +127,12 @@ is_precompiled_binary_available() ->
         {false, AppVersion} ->
             Target = get_target(),
             NifVersion = get_nif_version(),
-            case NifVersion < minimal_nif_version() of
+            MinimalNifVersion = minimal_nif_version(),
+            case NifVersion < MinimalNifVersion of
                 true ->
                     {false, "NIF version is too low, will fallback to compile from source code."};
                 false ->
-                    Name = lists:flatten(io_lib:fwrite(?PRECOMPILED_TARBALL_NAME, [NifVersion, Target, AppVersion])),
+                    Name = lists:flatten(io_lib:fwrite(?PRECOMPILED_TARBALL_NAME, [MinimalNifVersion, Target, AppVersion])),
                     TarballFilename = lists:flatten(io_lib:fwrite("~s.tar.gz", [Name])),
                     case get_expected_checksum(TarballFilename) of
                         false ->
@@ -217,7 +218,7 @@ download(URL, CacheFilename, ChecksumAlgo, ExpectedChecksum, Overwrite) ->
         nil ->
             io:fwrite("[INFO] not downloaded, will download!~n"),
             download_precompiled_binary(URL, CacheTo, ChecksumAlgo);
-        _ -> 
+        _ ->
             case ExpectedChecksum == CachedFileChecksum of
                 true ->
                     io:fwrite("[INFO] Precompiled binary tarball cached at ~s, checksum[~p]=~p\r\n", [CacheTo, Algo, CachedFileChecksum]),
@@ -256,7 +257,7 @@ certificate_store() ->
         %% MacOS & Alpine Linux
         "/etc/ssl/cert.pem"
     ],
-    CheckExistance = lists:map(fun (F) -> 
+    CheckExistance = lists:map(fun (F) ->
         {filelib:is_file(F), F}
     end, PossibleLocations),
     ExistingOnes = lists:dropwhile(fun ({X, _}) -> X == false end, CheckExistance),
@@ -404,7 +405,7 @@ checksum_template() ->
 
 fetch_precompile() ->
     {AppVersion, Targets} = all_available_targets(),
-    Results = 
+    Results =
         lists:filtermap(
             fun(Target) ->
                 URL = io_lib:format(?PRECOMPILED_DOWNLOAD_URL, [AppVersion, Target]),
@@ -447,14 +448,16 @@ fetch_precompile() ->
 install_precompiled_binary_if_available() ->
     case is_already_installed() of
         false ->
+            io:fwrite("[INFO] Precompiled binary not found, will download and install~n"),
             case is_precompiled_binary_available() of
                 {true, Name, TarballFilename, TarballURL, ExpectedAlgo, ExpectedChecksum} ->
+                    io:format("[INFO] Precompiled binary available: ~s~n", [Name]),
                     case download(TarballURL, TarballFilename, ExpectedAlgo, ExpectedChecksum, false) of
                         {_, _, nil} ->
                             exit(failed);
                         {TarballFileFullPath, _, ExpectedChecksum} ->
                             file:del_dir_r("tmp_priv"),
-                            Status = 
+                            Status =
                                 case erl_tar:extract(TarballFileFullPath, [compressed, {cwd, "tmp_priv"}]) of
                                     ok ->
                                         file:del_dir_r("priv"),
@@ -465,6 +468,7 @@ install_precompiled_binary_if_available() ->
                                             {error, PrivError} ->
                                                 io:fwrite("[ERROR] Failed to move priv directory: ~p~n", [PrivError]);
                                             _ ->
+                                                io:fwrite("[INFO] Restored priv directory~n", []),
                                                 ok
                                         end;
                                     Error ->
@@ -472,7 +476,7 @@ install_precompiled_binary_if_available() ->
                                         failed
                                 end,
                             file:del_dir_r("tmp_priv"),
-                            case Status of 
+                            case Status of
                                 failed ->
                                     exit(failed);
                                 _ ->

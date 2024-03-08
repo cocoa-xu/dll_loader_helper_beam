@@ -20,7 +20,11 @@ CMAKE_GENERATOR_TYPE=NMake Makefiles
 
 !IFDEF CMAKE_TOOLCHAIN_FILE
 CMAKE_CONFIGURE_FLAGS=-D CMAKE_TOOLCHAIN_FILE="$(CMAKE_TOOLCHAIN_FILE)"
-!endif
+!ENDIF
+
+!IFNDEF DLL_LOADER_HELPER_BEAM_USE_PRECOMPILED
+DLL_LOADER_HELPER_BEAM_USE_PRECOMPILED=true
+!ENDIF
 
 nif_dll: c_src/dll_loader_helper_beam.cpp
 !IF "$(DLL_LOADER_HELPER_BEAM_USE_PRECOMPILED)" != "true"
@@ -33,13 +37,13 @@ nif_dll: c_src/dll_loader_helper_beam.cpp
     cmake --install . --config "$(CMAKE_BUILD_TYPE)" && cd .. \
   )
 !ELSE
-	@ erlc "precompiled.erl" && \
-    erlc "checksum.erl" && \
-	  erl -noshell -s init stop -s precompiled install_precompiled_binary_if_available || \
-    ( 
-      nmake DLL_LOADER_HELPER_BEAM_USE_PRECOMPILED=false && \
-      if exist "erl_crash.dump" del /f erl_crash.dump
-    )
+  @ erlc precompiled.erl
+  @ erlc checksum.erl
+  erl -noshell -s precompiled install_precompiled_binary_if_available -s init stop || \
+  ( 
+    nmake DLL_LOADER_HELPER_BEAM_USE_PRECOMPILED=false Makefile.win && \
+    if exist "erl_crash.dump" del /f erl_crash.dump
+  )
 !ENDIF
 
 .PHONY: all
