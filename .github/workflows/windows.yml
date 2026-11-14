@@ -81,10 +81,8 @@ jobs:
             export TARGET_ARCH=aarch64
           fi
 
-          erl -noshell -eval 'io:format("arch=~s otp=~s nif=~s~n", [erlang:system_info(system_architecture), erlang:system_info(otp_release), erlang:system_info(nif_version)]), halt().'
           rebar3 deps
-          DEBUG=1 rebar3 compile
-          ls -la priv || true
+          rebar3 compile
 
           cd ..
 
