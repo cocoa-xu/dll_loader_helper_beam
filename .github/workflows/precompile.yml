@@ -32,19 +32,19 @@ jobs:
               arch_name: aarch64
               msbuild_platform: ARM64
               vcvarsall: amd64_arm64
-              otp_version: "21"
-              CMAKE_GENERATOR_TYPE: "Visual Studio 17"
+              otp_version: "26"
+              CMAKE_GENERATOR_TYPE: "Visual Studio 18 2026"
               CMAKE_TOOLCHAIN_FILE: "cc_toolchain/aarch64-windows-msvc.cmake"
           - pair:
               arch_name: x86_64
               msbuild_platform: x64
               vcvarsall: x64
-              otp_version: "21"
+              otp_version: "26"
           - pair:
               arch_name: i686
               msbuild_platform: x86
               vcvarsall: amd64_x86
-              otp_version: "21"
+              otp_version: "26"
 
     steps:
       - name: Checkout
@@ -99,7 +99,7 @@ jobs:
           mkdir -p artifacts
           mv "${PKG_NAME}.tar.gz" artifacts
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |

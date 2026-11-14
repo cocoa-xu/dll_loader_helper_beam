@@ -31,7 +31,6 @@ extern "C"
 			wcscat_s(newPath, _countof(newPath), (const wchar_t*)L";");
 			wcscat_s(newPath, _countof(newPath), (const wchar_t*)newDirectoryPCWSTR);
 			SetEnvironmentVariableW(L"PATH", newPath);
-			SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_USER_DIRS);
 			DLL_DIRECTORY_COOKIE ret = AddDllDirectory(newDirectoryPCWSTR);
 			delete[] buf;
 			if (ret == 0) {

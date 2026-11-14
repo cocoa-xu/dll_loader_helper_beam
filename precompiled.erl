@@ -65,7 +65,10 @@ maybe_override_by_env(EnvName, Default) ->
     end.
 
 get_target() ->
-    TargetParts = string:split(erlang:system_info(system_architecture), "-", all),
+    TargetParts = case os:type() of
+        {win32, _} -> ["win32"];
+        _ -> string:split(erlang:system_info(system_architecture), "-", all)
+    end,
     [G_ARCH, G_OS, G_ABI] = case length(TargetParts) of
         4 ->
             [T_ARCH, _, T_OS, T_ABI] = TargetParts,
@@ -103,7 +106,7 @@ get_nif_version() ->
     erlang:system_info(nif_version).
 
 minimal_nif_version() ->
-    "2.14".
+    "2.17".
 
 get_expected_checksum(TarballFilename) ->
     Map = checksum:checksum(),

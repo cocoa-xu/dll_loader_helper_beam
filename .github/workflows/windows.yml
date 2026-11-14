@@ -32,17 +32,17 @@ jobs:
           - pair:
               msbuild_platform: ARM64
               vcvarsall: amd64_arm64
-              otp_version: "21"
-              CMAKE_GENERATOR_TYPE: "Visual Studio 17"
+              otp_version: "29"
+              CMAKE_GENERATOR_TYPE: "Visual Studio 18 2026"
               CMAKE_TOOLCHAIN_FILE: "cc_toolchain/aarch64-windows-msvc.cmake"
           - pair:
               msbuild_platform: x64
               vcvarsall: x64
-              otp_version: "21"
+              otp_version: "29"
           - pair:
               msbuild_platform: x86
               vcvarsall: amd64_x86
-              otp_version: "21"
+              otp_version: "29"
 
     steps:
       - name: Checkout
