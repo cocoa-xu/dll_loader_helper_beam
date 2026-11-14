@@ -82,7 +82,8 @@ jobs:
           fi
 
           rebar3 deps
-          rebar3 compile
+          DEBUG=1 rebar3 compile
+          ls -la priv || true
 
           cd ..
 
