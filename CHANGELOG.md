@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.3 (2026-11-15)
+
+- No longer calls `SetDefaultDllDirectories`, which changed how every DLL in the VM was found. Other native libraries that find their DLLs through `PATH` keep working after this library is loaded.
+- Works on Windows with Erlang/OTP 28 and later. These versions report `system_architecture` as `x86_64-pc-windows` instead of `win32`, so the NIF was not built and the precompiled binaries were not found.
+- Precompiled binaries now need Erlang/OTP 26 or later (NIF 2.17). Older versions build from source.
+
 ## v1.2.2 (2024-03-08)
 
 Fixed the issue that precompiled binaries are not used.
