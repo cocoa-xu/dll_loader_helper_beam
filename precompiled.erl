@@ -103,7 +103,7 @@ get_nif_version() ->
     erlang:system_info(nif_version).
 
 minimal_nif_version() ->
-    "2.14".
+    "2.17".
 
 get_expected_checksum(TarballFilename) ->
     Map = checksum:checksum(),
